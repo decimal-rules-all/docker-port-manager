@@ -3,10 +3,18 @@ import argparse
 import json
 import os
 
+from enum import Enum
+
 
 CONTAINER_PATH = '/var/snap/docker/common/var-lib-docker/containers/'
 CONFIG_FILE = 'config.v2.json'
 HOSTCONFIG_FILE = 'hostconfig.json'
+
+
+class Protocol(Enum):
+    """Enum for supported protocol"""
+    TCP = 'tcp'
+    UDP = 'udp'
 
 
 class DockerPortManager:
@@ -37,14 +45,19 @@ class DockerPortManager:
         """list all port bindings"""
         return self.host_config.get('PortBindings', {})
 
-    def add_exported_port(self, port: int) -> None:
-        """add exported port"""
-        exported_port = {str(port) + '/tcp': {}}
+    def add_exported_port(self, port: int, protocol: Protocol = Protocol.TCP) -> None:
+        """add container exported port"""
+        exported_port = {str(port) + '/' + protocol: {}}
         self.container_config['Config']['ExposedPorts'].update(exported_port)
 
-    def add_port_binding(self, container_port: int, host_port: int) -> None:
-        """add port binding"""
-        port_binding = {str(container_port) + '/tcp': [{'HostIp': '', 'HostPort': str(host_port)}]}
+    def add_port_binding(self, container_port: int,
+                         host_port: int, protocol: Protocol = Protocol.TCP) -> None:
+        """add host port binding. will export container port if not exists."""
+        # add container exported port
+        self.add_exported_port(container_port, protocol=protocol)
+        # add host port binding
+        port_binding = {str(container_port) + '/' + protocol:
+                        [{'HostIp': '', 'HostPort': str(host_port)}]}
         self.host_config['PortBindings'].update(port_binding)
 
     def save_container_config(self) -> None:
