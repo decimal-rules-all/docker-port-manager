@@ -47,7 +47,7 @@ class DockerPortManager:
 
     def add_exported_port(self, port: int, protocol: Protocol = Protocol.TCP) -> None:
         """add container exported port"""
-        exported_port = {str(port) + '/' + protocol: {}}
+        exported_port = {str(port) + '/' + str(protocol.value): {}}
         self.container_config['Config']['ExposedPorts'].update(exported_port)
 
     def add_port_binding(self, container_port: int,
@@ -56,7 +56,7 @@ class DockerPortManager:
         # add container exported port
         self.add_exported_port(container_port, protocol=protocol)
         # add host port binding
-        port_binding = {str(container_port) + '/' + protocol:
+        port_binding = {str(container_port) + '/' + str(protocol.value):
                         [{'HostIp': '', 'HostPort': str(host_port)}]}
         self.host_config['PortBindings'].update(port_binding)
 
@@ -72,13 +72,56 @@ class DockerPortManager:
         with open(config_path, 'w', encoding='utf-8') as file:
             json.dump(self.host_config, file)
 
+    def save(self) -> None:
+        """save both container config and host config"""
+        self.save_container_config()
+        self.save_host_config()
 
-if __name__ == '__main__':
+
+def main():
+    """run for cli"""
     parser = argparse.ArgumentParser()
-    parser.add_argument('container_id', help='container id',
-                        type=str)
+    parser.add_argument("container_id", type=str,
+                        help="container id")
+    subparsers = parser.add_subparsers(dest="action", help="action to perform", required=True)
+
+    # list port binding options
+    action_lst = subparsers.add_parser("list")
+
+    # add port binding options
+    action_add = subparsers.add_parser("add")
+    action_add.add_argument("container_port", type=int,
+                            help="container port")
+    action_add.add_argument("--protocol", type=str,
+                            default="tcp", choices=["tcp", "udp"],
+                            help="port protocol, default tcp")
+    action_add.add_argument("--host_port", type=int,
+                            help="host port")
+
     args = parser.parse_args()
 
     dpm = DockerPortManager(args.container_id)
-    print(dpm.list_exported_ports())
-    print(dpm.list_port_bindings())
+
+    # list port binding
+    if args.action == "list":
+        exported_ports = dpm.list_exported_ports()
+        port_bindings = dpm.list_port_bindings()
+
+        print("container port | protocol | host ports")
+        print("-------------- | -------- | ----------")
+        for k in exported_ports.keys():
+            cp, proto = k.split('/')
+            hp = ",".join([b.get("HostPort") for b in port_bindings[k]])
+            print(f"{cp:14} | {proto:8} | {hp}")
+
+    # add port binding
+    elif args.action == "add":
+        cp = args.container_port
+        hp = args.host_port if args.host_port else args.container_port
+        proto = Protocol.TCP if args.protocol == "tcp" else Protocol.UDP
+        dpm.add_port_binding(cp, hp, protocol=proto)
+        dpm.save()
+
+
+if __name__ == '__main__':
+    main()
