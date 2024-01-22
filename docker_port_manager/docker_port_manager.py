@@ -55,7 +55,7 @@ class DockerPortManager:
         """determine if port binding exists"""
         port_bindings = self.list_port_bindings()
         host_ports = port_bindings.get("/".join([str(container_port), str(protocol.value)]), [])
-        return host_port in host_ports
+        return any(p for p in host_ports if p["HostPort"] == str(host_port))
 
     def add_exported_port(self, port: int, protocol: Protocol = Protocol.TCP) -> None:
         """add container exported port"""
@@ -69,8 +69,24 @@ class DockerPortManager:
         self.add_exported_port(container_port, protocol=protocol)
         # add host port binding
         port_binding = {"/".join([str(container_port), str(protocol.value)]):
-                        [{'HostIp': '', 'HostPort': str(host_port)}]}
-        self.host_config['PortBindings'].update(port_binding)
+                        [{"HostIp": "", "HostPort": str(host_port)}]}
+        self.host_config["PortBindings"].update(port_binding)
+
+    def remove_exported_port(self, port:int, protocol: Protocol = Protocol.TCP) -> None:
+        """remove container exported port"""
+        exported_ports = self.list_exported_ports()
+        exported_ports.pop("/".join([str(port), str(protocol.value)]), None)
+
+    def remove_port_binding(self, container_port: int, host_port: int,
+                            protocol: Protocol = Protocol.TCP) -> None:
+        """remove host port binding"""
+        port_bindings = self.list_port_bindings()
+        host_ports = port_bindings.get("/".join([str(container_port), str(protocol.value)]), [])
+        host_ports = [p for p in host_ports if not p.get("HostPort") == str(host_port)]
+        if not host_ports:
+            port_bindings.pop("/".join([str(container_port), str(protocol.value)]), None)
+        else:
+            port_bindings["/".join([str(container_port), str(protocol.value)])] = host_ports
 
     def save_container_config(self) -> None:
         """save container config"""
