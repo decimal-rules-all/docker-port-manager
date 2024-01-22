@@ -45,9 +45,21 @@ class DockerPortManager:
         """list all port bindings"""
         return self.host_config.get('PortBindings', {})
 
+    def is_exported_port_exist(self, port: int, protocol: Protocol = Protocol.TCP) -> bool:
+        """detemine if container exports the port"""
+        exported_ports = self.list_exported_ports()
+        return "/".join([str(port), str(protocol.value)]) in exported_ports.keys()
+
+    def is_port_binding_exist(self, container_port:int, host_port: int,
+                              protocol: Protocol = Protocol.TCP) -> bool:
+        """determine if port binding exists"""
+        port_bindings = self.list_port_bindings()
+        host_ports = port_bindings.get("/".join([str(container_port), str(protocol.value)]), [])
+        return host_port in host_ports
+
     def add_exported_port(self, port: int, protocol: Protocol = Protocol.TCP) -> None:
         """add container exported port"""
-        exported_port = {str(port) + '/' + str(protocol.value): {}}
+        exported_port = {"/".join([str(port), str(protocol.value)]): {}}
         self.container_config['Config']['ExposedPorts'].update(exported_port)
 
     def add_port_binding(self, container_port: int,
@@ -56,7 +68,7 @@ class DockerPortManager:
         # add container exported port
         self.add_exported_port(container_port, protocol=protocol)
         # add host port binding
-        port_binding = {str(container_port) + '/' + str(protocol.value):
+        port_binding = {"/".join([str(container_port), str(protocol.value)]):
                         [{'HostIp': '', 'HostPort': str(host_port)}]}
         self.host_config['PortBindings'].update(port_binding)
 
