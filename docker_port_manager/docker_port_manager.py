@@ -126,6 +126,16 @@ def main():
     action_add.add_argument("--host_port", type=int,
                             help="host port")
 
+    # remove port binding options
+    action_remove = subparsers.add_parser("remove")
+    action_remove.add_argument("container_port", type=int,
+                               help="container port")
+    action_remove.add_argument("--protocol", type=str,
+                               default="tcp", choices=["tcp", "udp"],
+                               help="port protocol, default tcp")
+    action_remove.add_argument("--host_port", type=int,
+                               help="host port")
+
     args = parser.parse_args()
 
     dpm = DockerPortManager(args.container_id)
@@ -139,7 +149,7 @@ def main():
         print("-------------- | -------- | ----------")
         for k in exported_ports.keys():
             cp, proto = k.split('/')
-            hp = ",".join([b.get("HostPort") for b in port_bindings[k]])
+            hp = ",".join([b.get("HostPort") for b in port_bindings.get(k, {})])
             print(f"{cp:14} | {proto:8} | {hp}")
 
     # add port binding
@@ -148,6 +158,14 @@ def main():
         hp = args.host_port if args.host_port else args.container_port
         proto = Protocol.TCP if args.protocol == "tcp" else Protocol.UDP
         dpm.add_port_binding(cp, hp, protocol=proto)
+        dpm.save()
+
+    # remove port binding
+    elif args.action == "remove":
+        cp = args.container_port
+        hp = args.host_port if args.host_port else args.container_port
+        proto = Protocol.TCP if args.protocol == "tcp" else Protocol.UDP
+        dpm.remove_port_binding(cp, hp, protocol=proto)
         dpm.save()
 
 
