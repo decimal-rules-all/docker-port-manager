@@ -6,7 +6,9 @@ import os
 from enum import Enum
 
 
-CONTAINER_PATH = '/var/snap/docker/common/var-lib-docker/containers/'
+CONTAINER_PATH = '/var/lib/docker/containers'
+# if installed with snap, use following path
+# CONTAINER_PATH = '/var/snap/docker/common/var-lib-docker/containers/'
 CONFIG_FILE = 'config.v2.json'
 HOSTCONFIG_FILE = 'hostconfig.json'
 
