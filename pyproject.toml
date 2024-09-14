@@ -5,10 +5,14 @@ description = ""
 authors = ["dra <decimal.rules.all@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "docker_port_manager"}]
+packages = [{include = "dpm"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+pytest = "^8.3.2"
+fastapi = "^0.114.0"
+uvicorn = "^0.30.6"
+mock = "^5.1.0"
 
 
 [build-system]
