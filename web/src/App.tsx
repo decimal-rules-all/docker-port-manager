@@ -1,24 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { getContainers } from 'services/api';
+import ContainerTable from 'components/ContainerTable';
+import { useEffect, useState } from 'react';
+import { Container } from 'types/Container';
 
 function App() {
+  const [containers, setContainers] = useState<Container[]>([]);
+
+  useEffect(() => {
+    getContainers().then((containers) => {
+      setContainers(containers);
+    })
+  }, [])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <ContainerTable rows={containers}/>
     </div>
   );
 }
