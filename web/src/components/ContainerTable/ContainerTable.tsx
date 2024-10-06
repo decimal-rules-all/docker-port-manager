@@ -10,7 +10,7 @@ const ContainerTable = ({rows}: {rows: Container[]}) => {
         <Table sx={{ minWidth: 650 }} aria-label="Containers">
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
+              <TableCell width={ 100 }>ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Ports</TableCell>
               <TableCell>Action</TableCell>
