@@ -2,6 +2,7 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import { Container } from "types/Container";
 import PortCell from "./PortCell";
 import IdCell from "./IdCell";
+import NameCell from "./NameCell";
 
 const ContainerTable = ({rows}: {rows: Container[]}) => {
     return (
@@ -23,7 +24,9 @@ const ContainerTable = ({rows}: {rows: Container[]}) => {
                 <TableCell component="th" scope="row">
                     <IdCell id={row.id} />
                 </TableCell>
-                <TableCell>{row.name}</TableCell>
+                <TableCell>
+                    <NameCell name={row.name} />
+                </TableCell>
                 <TableCell>
                     <PortCell portBindings={row.port_bindings} />
                 </TableCell>
