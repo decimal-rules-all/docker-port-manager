@@ -1,5 +1,7 @@
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { Container } from "types/Container";
+import PortCell from "./PortCell";
+import IdCell from "./IdCell";
 
 const ContainerTable = ({rows}: {rows: Container[]}) => {
     return (
@@ -19,10 +21,12 @@ const ContainerTable = ({rows}: {rows: Container[]}) => {
                 key={row.id}
               >
                 <TableCell component="th" scope="row">
-                  {row.id}
+                    <IdCell id={row.id} />
                 </TableCell>
                 <TableCell>{row.name}</TableCell>
-                <TableCell></TableCell>
+                <TableCell>
+                    <PortCell portBindings={row.port_bindings} />
+                </TableCell>
                 <TableCell>edit</TableCell>
               </TableRow>
             ))}
