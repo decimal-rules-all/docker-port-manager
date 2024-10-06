@@ -1,8 +1,9 @@
 import './App.css';
-import { getContainers } from 'services/api';
-import ContainerTable from 'components/ContainerTable';
 import { useEffect, useState } from 'react';
 import { Container } from 'types/Container';
+import { getContainers } from 'services/api';
+import ContainerTable from 'components/ContainerTable';
+import TitleBar from 'components/TitleBar';
 
 function App() {
   const [containers, setContainers] = useState<Container[]>([]);
@@ -15,6 +16,7 @@ function App() {
 
   return (
     <div className="App">
+      <TitleBar />
       <ContainerTable rows={containers}/>
     </div>
   );
