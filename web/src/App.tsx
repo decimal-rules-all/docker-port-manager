@@ -20,7 +20,20 @@ function App() {
     const keyword = e.target.value;
     const filteredContainers = containers.filter((container) => {
       return (
-        container.id.startsWith(keyword) || container.name.includes(keyword)
+        container.id.includes(keyword) ||
+        container.name.includes(keyword) ||
+        container.port_bindings.some((pb) => {
+          return (
+            pb.exposed_port.port.toString().includes(keyword) ||
+            pb.exposed_port.protocol.includes(keyword) ||
+            pb.host_ports.some((hp) => {
+              return (
+                hp.host_port.toString().includes(keyword) ||
+                hp.host_ip.includes(keyword)
+              );
+            })
+          );
+        })
       );
     });
     setFilteredContainers(filteredContainers);
