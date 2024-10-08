@@ -1,4 +1,4 @@
 export interface HostPort {
-    host_ip: string;
-    host_port: number;
+  host_ip: string;
+  host_port: number;
 }

@@ -1,4 +1,4 @@
 export interface ExposedPort {
-    port: number;
-    protocol: string;
+  port: number;
+  protocol: string;
 }

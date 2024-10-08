@@ -4,7 +4,11 @@ import PortCell from "./PortCell";
 import IdCell from "./IdCell";
 import NameCell from "./NameCell";
 
-const ContainerTable = ({rows}: {rows: Container[]}) => {
+interface ContainerTableProps {
+    containers: Container[];
+}
+
+const ContainerTable = ({ containers }: ContainerTableProps) => {
     return (
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="Containers">
@@ -17,18 +21,18 @@ const ContainerTable = ({rows}: {rows: Container[]}) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {containers.map((container) => (
               <TableRow
-                key={row.id}
+                key={container.id}
               >
                 <TableCell component="th" scope="row">
-                    <IdCell id={row.id} />
+                    <IdCell id={container.id} />
                 </TableCell>
                 <TableCell>
-                    <NameCell name={row.name} />
+                    <NameCell name={container.name} />
                 </TableCell>
                 <TableCell>
-                    <PortCell portBindings={row.port_bindings} />
+                    <PortCell portBindings={container.port_bindings} />
                 </TableCell>
                 <TableCell>edit</TableCell>
               </TableRow>
