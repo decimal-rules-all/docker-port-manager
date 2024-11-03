@@ -78,6 +78,11 @@ class Container():
         exported_port = {"/".join([str(port), str(protocol.value)]): {}}
         self.container_config['Config']['ExposedPorts'].update(exported_port)
 
+    def remove_exported_port(self, port:int, protocol: Protocol = Protocol.TCP) -> None:
+        """remove container exported port"""
+        exported_ports = self.get_exported_ports()
+        exported_ports.pop("/".join([str(port), str(protocol.value)]), None)
+
     def get_port_bindings(self) -> dict:
         """get port bindings"""
         return self.host_config.get('PortBindings', {})

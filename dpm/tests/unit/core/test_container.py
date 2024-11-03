@@ -102,6 +102,15 @@ class TestContainer:
 
     @mock.patch("dpm.core.container.json.load")
     @mock.patch("dpm.core.container.open")
+    def test_remove_exported_port(self, _, mock_json_load, container_config):
+        mock_json_load.return_value = container_config
+        container = container_core.Container('container_id')
+        assert '80/tcp' in container.get_exported_ports()
+        container.remove_exported_port(80, container_core.Protocol.TCP)
+        assert '80/tcp' not in container.get_exported_ports()
+
+    @mock.patch("dpm.core.container.json.load")
+    @mock.patch("dpm.core.container.open")
     def test_get_port_bindings(self, _, mock_json_load, host_config):
         mock_json_load.return_value = host_config
         container = container_core.Container('container_id')
