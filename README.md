@@ -62,3 +62,29 @@ container port | protocol | host ports
 -------------- | -------- | ----------
 80             | tcp      | 80
 ```
+
+## API
+
+### Install dependencies
+
+```bash
+sudo `which poetry` install
+```
+
+### Start API service
+
+```bash
+sudo `which poetry` run start
+```
+
+### Run test
+
+```bash
+poetry run pytest
+```
+
+## Web-UI
+
+```bash
+npm start
+```

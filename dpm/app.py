@@ -1,3 +1,4 @@
+import uvicorn
 from typing import List
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,6 +28,10 @@ async def get_containers() -> List[GetContainerResponse]:
     return await container_service.get_containers()
 
 
-if __name__ == "__main__":
-    import uvicorn
+def start():
+    """start app"""
     uvicorn.run("app:app", reload=True)
+
+
+if __name__ == "__main__":
+    start()
