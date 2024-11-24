@@ -118,3 +118,27 @@ class TestContainer:
             '80/tcp': [{'HostIp': '127.0.0.1', 'HostPort': '8080'}],
             '443/tcp': [{'HostIp': '', 'HostPort': '8443'}],
             '53/udp': [{'HostIp': '', 'HostPort': '53'}]}
+
+    @mock.patch("dpm.core.container.json.load")
+    @mock.patch("dpm.core.container.open")
+    def test_is_port_binding_exist(self, _, mock_json_load, host_config):
+        mock_json_load.return_value = host_config
+        container = container_core.Container('container_id')
+        assert container.is_port_binding_exist(80, 8080, '127.0.0.1')
+
+    @mock.patch("dpm.core.container.json.load")
+    @mock.patch("dpm.core.container.open")
+    def test_add_port_binding(self, _, mock_json_load, host_config):
+        mock_json_load.return_value = host_config
+        container = container_core.Container('container_id')
+        container.add_port_binding(443, 8443, '192.168.0.1')
+        assert container.is_port_binding_exist(443, 8443, '192.168.0.1')
+
+    @mock.patch("dpm.core.container.json.load")
+    @mock.patch("dpm.core.container.open")
+    def test_remove_port_binding(self, _, mock_json_load, host_config):
+        mock_json_load.return_value = host_config
+        container = container_core.Container('container_id')
+        assert container.is_port_binding_exist(80, 8080, '127.0.0.1')
+        container.remove_port_binding(80, 8080, '127.0.0.1')
+        assert not container.is_port_binding_exist(80, 8080, '127.0.0.1')
